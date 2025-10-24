@@ -1,30 +1,51 @@
 import fetch from 'node-fetch';
-const cheerio = require('cheerio');
+const cheerio = require('cheerio'); // Use require for Node.js compatibility
 
 export const id = 'bollyflix';
 const baseUrl = 'https://bollyflix.promo';
 
-export async function search(query: string) {
+export interface EpisodeLink {
+  url: string;
+  quality?: string;
+}
+
+export interface MovieLoadResponse {
+  title: string;
+  posterUrl: string;
+  plot: string;
+  episodes: EpisodeLink[];
+}
+
+export interface MovieSearchResult {
+  id: string;
+  title: string;
+  poster: string;
+  _plugin: string;
+}
+
+export async function search(query: string): Promise<MovieSearchResult[]> {
   const url = `${baseUrl}/search/${encodeURIComponent(query)}/`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to fetch search results: ${res.status}`);
+  if (!res.ok) return []; // fail gracefully
   const html = await res.text();
   const $ = cheerio.load(html);
 
-  const results = $('div.post-cards > article').map((_: number, el: any) => {
-    const aTag = $(el).find('a');
-    const title = aTag.attr('title')?.trim() || 'No title';
-    const href = aTag.attr('href') || '';
-    const poster = $(el).find('img').attr('src') || '';
-    return { id: href, title, poster, _plugin: id };
-  }).get();
+  const results: MovieSearchResult[] = $('div.post-cards > article')
+    .map((_: number, el: any) => {
+      const aTag = $(el).find('a');
+      const title = aTag.attr('title')?.trim() || 'No title';
+      const href = aTag.attr('href') || '';
+      const poster = $(el).find('img').attr('src') || '';
+      return { id: href, title, poster, _plugin: id };
+    })
+    .get();
 
   return results;
 }
 
-export async function load(url: string) {
+export async function load(url: string): Promise<MovieLoadResponse> {
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to load movie page: ${res.status}`);
+  if (!res.ok) return { title: '', posterUrl: '', plot: '', episodes: [] }; // fail gracefully
   const html = await res.text();
   const $ = cheerio.load(html);
 
@@ -32,13 +53,12 @@ export async function load(url: string) {
   const posterUrl = $('meta[property="og:image"]').attr('content') || '';
   const plot = $('div.summary').text().trim() || 'No plot available';
 
-  // Collect episodes or links if they exist
-  const episodes = $('div.download-links a').map((_: number, el: any) => {
-    return {
+  const episodes: EpisodeLink[] = $('div.download-links a')
+    .map((_: number, el: any) => ({
       url: $(el).attr('href') || '',
-      quality: $(el).text().trim()
-    };
-  }).get();
+      quality: $(el).text().trim() || undefined
+    }))
+    .get();
 
   return { title, posterUrl, plot, episodes };
 }
