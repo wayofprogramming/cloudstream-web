@@ -1,12 +1,33 @@
+import fetch from 'node-fetch';
+import cheerio from 'cheerio';
 
 export const id = 'bollyflix';
+const baseUrl = 'https://bollyflix.promo';
 
 export async function search(query: string) {
-  return [
-    { id: 'demo-movie', title: `Demo Movie for ${query}`, poster: 'https://via.placeholder.com/150', _plugin: id }
-  ];
+  const url = `${baseUrl}/search/${encodeURIComponent(query)}/`;
+  const res = await fetch(url);
+  const html = await res.text();
+  const $ = cheerio.load(html);
+
+  const results = $('div.post-cards > article').map((_, el) => {
+    const title = $(el).find('a').attr('title')?.trim() || 'Unknown';
+    const href = $(el).find('a').attr('href') || '#';
+    const poster = $(el).find('img').attr('src') || 'https://via.placeholder.com/150';
+    return { id: href, title, poster, _plugin: id };
+  }).get();
+
+  return results;
 }
 
 export async function load(url: string) {
-  return { title: 'Demo Movie', posterUrl: 'https://via.placeholder.com/150', plot: 'Demo plot', episodes: [] };
+  const res = await fetch(url);
+  const html = await res.text();
+  const $ = cheerio.load(html);
+
+  const title = $('title').text().replace('Download ', '');
+  const posterUrl = $('meta[property="og:image"]').attr('content') || 'https://via.placeholder.com/150';
+  const plot = $('span#summary').text() || 'No plot available';
+
+  return { title, posterUrl, plot, episodes: [] };
 }
