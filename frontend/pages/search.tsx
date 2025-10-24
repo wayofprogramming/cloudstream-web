@@ -27,7 +27,7 @@ export default function Search() {
             <div>
               {it.title} <small>({it._plugin})</small>
             </div>
-            <Link href={`/watch/${encodeURIComponent(it._plugin + '::' + it.id)}`}>
+            <Link href={`/load/${encodeURIComponent(it._plugin + '::' + it.id)}`}>
               Watch
             </Link>
           </li>
