@@ -1,5 +1,5 @@
-import fetch from 'node-fetch';
-import cheerio from 'cheerio';
+const fetch = require('node-fetch'); // Node-fetch 2.x style
+const cheerio = require('cheerio');
 
 export const id = 'bollyflix';
 const baseUrl = 'https://bollyflix.promo';
@@ -10,13 +10,15 @@ export async function search(query: string) {
   const html = await res.text();
   const $ = cheerio.load(html);
 
-  const results = $('div.post-cards > article').map((_, el) => {
-    const aTag = $(el).find('a');
-    const title = aTag.attr('title')?.trim() || 'Unknown';
-    const href = aTag.attr('href') || '#';
-    const poster = $(el).find('img').attr('src') || 'https://via.placeholder.com/150';
-    return { id: href, title, poster, _plugin: id };
-  }).get();
+  const results = $('div.post-cards > article')
+    .map((_, el) => {
+      const aTag = $(el).find('a');
+      const title = aTag.attr('title')?.trim() || 'Unknown';
+      const href = aTag.attr('href') || '#';
+      const poster = $(el).find('img').attr('src') || 'https://via.placeholder.com/150';
+      return { id: href, title, poster, _plugin: id };
+    })
+    .get();
 
   return results;
 }
