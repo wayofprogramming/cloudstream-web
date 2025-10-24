@@ -1,24 +1,24 @@
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://cloudstream-web-production.up.railway.app';
 
-const fetcher = (url: string) =>
-  fetch(`${API_URL}${url}`).then(r => r.json());
+const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 export default function WatchPage() {
   const router = useRouter();
   const { id } = router.query;
 
-  // Parse plugin and target URL from the route parameter
-  const [plugin, encodedUrl] = (id as string)?.split('::') || [];
-  const targetUrl = decodeURIComponent(encodedUrl || '');
+  // id format = plugin::encodedUrl
+  const [pluginId, encodedUrl] = (id as string)?.split('::') || [];
+  const url = decodeURIComponent(encodedUrl || '');
 
-  // Fetch from backend only when id is ready
-  const { data, error } = useSWR(
-    id ? `/api/watch?plugin=${plugin}&url=${encodeURIComponent(targetUrl)}` : null,
-    fetcher
-  );
+  // Build correct API endpoint (your working one)
+  const api = id
+    ? `${API_URL}/api/load?pluginId=${pluginId}&url=${encodeURIComponent(url)}`
+    : null;
+
+  const { data, error } = useSWR(api, fetcher);
 
   if (error) return <div>Error loading</div>;
   if (!data) return <div>Loading...</div>;
@@ -29,7 +29,7 @@ export default function WatchPage() {
       <img src={data.posterUrl} width={200} alt="" />
       <p>{data.plot}</p>
 
-      <h2>Episodes / Links</h2>
+      <h2>Episodes / Download Links</h2>
       {data.episodes?.length ? (
         <ul>
           {data.episodes.map((ep: any, i: number) => (
