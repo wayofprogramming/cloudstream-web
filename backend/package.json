@@ -1,0 +1,23 @@
+{
+  "name": "webstream-backend",
+  "version": "0.1.0",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.2",
+    "cors": "^2.8.5",
+    "morgan": "^1.10.0",
+    "body-parser": "^1.20.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "@types/node": "^20.5.1",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/morgan": "^1.9.4"
+  }
+}

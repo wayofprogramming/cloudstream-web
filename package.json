@@ -1,0 +1,10 @@
+{
+  "name": "cloudstream-web",
+  "scripts": {
+    "build": "cd backend && npm install && npm run build && cd ../frontend && npm install && npm run build",
+    "start": "concurrently \"cd backend && npm start\" \"cd frontend && npm run start\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
