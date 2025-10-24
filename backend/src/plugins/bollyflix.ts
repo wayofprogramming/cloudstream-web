@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import cheerio from 'cheerio';
+const cheerio = require('cheerio');
 
 export const id = 'bollyflix';
 const baseUrl = 'https://bollyflix.promo';
