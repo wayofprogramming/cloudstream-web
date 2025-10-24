@@ -1,18 +1,16 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 import { plugins } from '../plugin-loader';
-
 const router = Router();
 
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', async (req, res) => {
   const q = String(req.query.q || '');
   if (!q) return res.status(400).json({ error: 'q required' });
 
-  const results: any[] = []; // ✅ Explicitly typed array
-
+  const results: any[] = [];
   for (const id in plugins) {
-    const p = plugins[id];
-    if (p.search) {
-      const r: any[] = await p.search(q); // ✅ Ensure it's typed as array
+    const plugin = plugins[id];
+    if (plugin.search) {
+      const r = await plugin.search(q);
       r.forEach((item: any) => results.push(item));
     }
   }

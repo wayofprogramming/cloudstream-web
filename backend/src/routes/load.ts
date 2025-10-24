@@ -1,16 +1,15 @@
-
 import { Router } from 'express';
 import { plugins } from '../plugin-loader';
 const router = Router();
 
 router.get('/', async (req, res) => {
-  const { plugin, id } = req.query;
-  if (!plugin || !id) return res.status(400).json({ error: 'plugin and id required' });
+  const { pluginId, url } = req.query;
+  if (!pluginId || !url) return res.status(400).json({ error: 'pluginId and url required' });
 
-  const p = plugins[String(plugin)];
-  if (!p) return res.status(404).json({ error: 'Plugin not found' });
+  const plugin = plugins[String(pluginId)];
+  if (!plugin || !plugin.load) return res.status(404).json({ error: 'Plugin not found' });
 
-  const data = await p.load(String(id));
+  const data = await plugin.load(String(url));
   res.json(data);
 });
 

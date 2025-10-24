@@ -14,8 +14,15 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 
-loadPlugins().then(() => console.log('✅ Plugins loaded'));
+// Health check
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
+// Load plugins
+loadPlugins()
+  .then(() => console.log('✅ Plugins loaded'))
+  .catch(err => console.error('❌ Plugin load failed:', err));
+
+// Routes
 app.use('/api/search', searchRoutes);
 app.use('/api/load', loadRoutes);
 app.use('/api/links', linksRoutes);

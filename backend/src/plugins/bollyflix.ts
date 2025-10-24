@@ -7,37 +7,28 @@ const baseUrl = 'https://bollyflix.promo';
 export async function search(query: string) {
   const url = `${baseUrl}/search/${encodeURIComponent(query)}/`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to fetch search results: ${res.status}`);
   const html = await res.text();
   const $ = cheerio.load(html);
 
   const results = $('div.post-cards > article').map((_, el) => {
-    const title = $(el).find('a').attr('title');
-    const href = $(el).find('a').attr('href');
-    const poster = $(el).find('img').attr('src');
-
-    // Only include valid items
-    if (title && href && poster) {
-      return { id: href, title: title.trim(), poster, _plugin: id };
-    }
-    return null;
-  }).get().filter(Boolean); // Remove nulls
+    const aTag = $(el).find('a');
+    const title = aTag.attr('title')?.trim() || 'Unknown';
+    const href = aTag.attr('href') || '#';
+    const poster = $(el).find('img').attr('src') || 'https://via.placeholder.com/150';
+    return { id: href, title, poster, _plugin: id };
+  }).get();
 
   return results;
 }
 
 export async function load(url: string) {
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to fetch movie page: ${res.status}`);
   const html = await res.text();
   const $ = cheerio.load(html);
 
-  const title = $('title').text()?.replace('Download ', '').trim();
-  const posterUrl = $('meta[property="og:image"]').attr('content');
-  const plot = $('span#summary').text()?.trim();
-
-  // Only return if title exists
-  if (!title) throw new Error('Movie title not found');
+  const title = $('title').text().replace('Download ', '');
+  const posterUrl = $('meta[property="og:image"]').attr('content') || 'https://via.placeholder.com/150';
+  const plot = $('span#summary').text() || 'No plot available';
 
   return { title, posterUrl, plot, episodes: [] };
 }
