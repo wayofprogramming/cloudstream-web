@@ -1,4 +1,3 @@
-
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -9,18 +8,18 @@ import loadRoutes from './routes/load';
 import linksRoutes from './routes/links';
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 
-loadPlugins().then(() => console.log('Plugins loaded'));
+loadPlugins().then(() => console.log('✅ Plugins loaded'));
 
 app.use('/api/search', searchRoutes);
 app.use('/api/load', loadRoutes);
 app.use('/api/links', linksRoutes);
 
 app.listen(PORT, () => {
-  console.log(`Backend running on http://localhost:${PORT}`);
+  console.log(`🚀 Backend running on port ${PORT}`);
 });
