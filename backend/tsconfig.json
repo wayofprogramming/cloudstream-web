@@ -1,12 +1,21 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2019",
     "module": "commonjs",
-    "rootDir": ".",
     "outDir": "dist",
-    "esModuleInterop": true,
+    "rootDir": ".",
     "strict": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true
   },
-  "include": ["server.ts", "plugin-loader.ts", "routes/**/*.ts", "plugins/**/*.ts"]
+  "include": [
+    "*.ts",
+    "src/routes/**/*.ts",
+    "src/plugins/**/*.ts"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
 }
