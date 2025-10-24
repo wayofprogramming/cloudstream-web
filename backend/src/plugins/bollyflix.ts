@@ -33,7 +33,7 @@ export async function load(url: string) {
   const plot = $('div.summary').text().trim() || 'No plot available';
 
   // Collect download/stream links from the page
-  const episodes = $('div.download-links a').map((_: number, el: any) => {
+  const episodes = $('a.dl').map((_: number, el: any) => {
     const href = $(el).attr('href') || '';
     return {
       url: href.startsWith('http') ? href : baseUrl + href,
