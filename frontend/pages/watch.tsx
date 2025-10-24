@@ -5,6 +5,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://cloudstream-web-prod
 
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
+
+
 export default function WatchPage() {
   const router = useRouter();
   const { id } = router.query;
